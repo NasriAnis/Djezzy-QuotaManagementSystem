@@ -1,0 +1,16 @@
+{% extends 'client_page_base.html' %}
+{% block title %}{{ offer.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ offer.title }}</h1>
+    <p>{{ offer.description }}</p>
+
+    <h2>Available Plans</h2>
+    <ul>
+        {% for plan in offer_plans %}
+            <li>{{ plan.label }} — {{ plan.price_da }} DA</li>
+        {% empty %}
+            <li>No plans available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

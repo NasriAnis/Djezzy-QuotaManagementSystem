@@ -1,0 +1,34 @@
+body { margin: 0; font-family: sans-serif; }
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.layout {
+    display: flex;
+}
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+.content {
+    flex: 1;
+}
+
+.feed {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.offer-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}

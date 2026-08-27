@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Djezzy Client{% endblock %}</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+
+    {#  favicon, fonts, extra CSS links #}
+</head>
+
+<body>
+
+    <!-- ============ TOP BAR ============ -->
+    <header class="topbar">
+
+        <!-- LOGO -->
+        <div class="topbar-logo">
+            <h2>Djezzy Client</h2>
+        </div>
+
+        <!-- ACCOUNT BUTTONS -->
+        <div class="topbar-account">
+        </div>
+
+    </header>
+
+    <div class="layout">
+
+        <!-- ============ LEFT SIDEBAR (FILTERS) ============ -->
+        <aside class="sidebar">
+            <h3>Filters</h3>
+
+            <div class="filter-group">
+            </div>
+
+        </aside>
+
+        <!-- ============ MAIN CONTENT ============ -->
+        <main class="content">
+            {% block content %}
+            {# child templates (like index.html) inject their content here #}
+            {% endblock %}
+        </main>
+
+    </div>
+
+</body>
+
+</html>
