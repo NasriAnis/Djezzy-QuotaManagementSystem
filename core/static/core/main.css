@@ -79,3 +79,18 @@ body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: #eee; }
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+.topbar-account {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+.logout-form {
+    display: inline;
+}
+.btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
