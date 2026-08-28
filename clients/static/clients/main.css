@@ -1,0 +1,79 @@
+/* ============ AUTH BASE LAYOUT ============ */
+.layout-centered {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 70px); /* adjust to your topbar height */
+    padding-top: 3rem;
+}
+
+.content-auth {
+    width: 100%;
+    max-width: 420px;
+}
+
+.topbar-back {
+    display: flex;
+    align-items: center;
+}
+
+.btn-back {
+    color: #aaa;
+    background: transparent;
+    border: 1px solid #444;
+}
+.btn-back:hover {
+    color: #fff;
+    border-color: #888;
+}
+
+/* ============ AUTH SWITCH LINK (signup <-> login) ============ */
+.auth-switch {
+    margin-top: 1.25rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+.auth-switch a {
+    color: #f5c518;
+    text-decoration: none;
+    font-weight: 600;
+}
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* ============ ACCOUNT INFO ============ */
+.account-info {
+    margin-bottom: 1.5rem;
+}
+
+.account-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #333;
+}
+.account-row:last-child {
+    border-bottom: none;
+}
+
+.account-label {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.account-value {
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: 500;
+}
+
+.logout-form-full {
+    margin-top: 0.5rem;
+}
+.logout-form-full .btn-logout {
+    width: 100%;
+    padding: 0.65rem;
+}

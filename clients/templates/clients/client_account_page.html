@@ -1,0 +1,31 @@
+{% extends 'clients/client_auth_base.html' %}
+{% block title %}My Account{% endblock %}
+{% block content %}
+<div class="auth-form-wrapper">
+    <h1>My Account</h1>
+
+    <div class="account-info">
+        <div class="account-row">
+            <span class="account-label">Name</span>
+            <span class="account-value">{{ client.user.first_name }} {{ client.user.last_name }}</span>
+        </div>
+        <div class="account-row">
+            <span class="account-label">Username</span>
+            <span class="account-value">{{ client.user.username }}</span>
+        </div>
+        <div class="account-row">
+            <span class="account-label">Email</span>
+            <span class="account-value">{{ client.user.email }}</span>
+        </div>
+        <div class="account-row">
+            <span class="account-label">Phone</span>
+            <span class="account-value">{{ client.phone|default:"—" }}</span>
+        </div>
+    </div>
+
+    <form action="{% url 'client_logout' %}" method="post" class="logout-form-full">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-logout">Log out</button>
+    </form>
+</div>
+{% endblock %}

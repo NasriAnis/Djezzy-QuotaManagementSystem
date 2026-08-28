@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Djezzy Client{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/main.css' %}">
+    <link rel="stylesheet" href="{% static 'clients/main.css' %}">
+</head>
+<body>
+    <!-- ============ TOP BAR ============ -->
+    <header class="topbar">
+        <!-- LOGO -->
+        <div class="topbar-logo">
+            <h2>Djezzy Client</h2>
+        </div>
+        <!-- BACK LINK -->
+        <div class="topbar-back">
+            <a href="{% url 'client_index_page' %}" class="btn btn-back">&larr; Back to Offers</a>
+        </div>
+    </header>
+    <div class="layout-centered">
+        <!-- ============ MAIN CONTENT (no sidebar) ============ -->
+        <main class="content-auth">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>
