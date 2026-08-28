@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Offer, OfferCategory, OfferPlan
 
-def index_page(request):
+def client_index_page(request):
     offers = Offer.objects.filter(is_active=True)
     categories = OfferCategory.objects.all()
 
