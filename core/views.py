@@ -12,7 +12,7 @@ def client_index_page(request):
         'offers': offers,
         'categories': categories,
     }
-    return render(request, 'client_index.html', context)
+    return render(request, 'core/client_index.html', context)
 
 def offer_detail_page(request, offer_slug):
     offer = get_object_or_404(Offer, slug=offer_slug, is_active=True)
@@ -22,4 +22,4 @@ def offer_detail_page(request, offer_slug):
         'offer': offer,
         'offer_plans': offer_plans,
     }
-    return render(request,"offer_details_page.html", context)
+    return render(request,"core/offer_details_page.html", context)
