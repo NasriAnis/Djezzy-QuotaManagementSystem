@@ -133,3 +133,9 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+LOGIN_URL = 'client_login'
+AUTHENTICATION_BACKENDS = [
+    'clients.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
