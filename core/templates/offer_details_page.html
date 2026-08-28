@@ -1,16 +1,29 @@
 {% extends 'client_page_base.html' %}
 {% block title %}{{ offer.title }}{% endblock %}
-
 {% block content %}
     <h1>{{ offer.title }}</h1>
     <p>{{ offer.description }}</p>
 
     <h2>Available Plans</h2>
-    <ul>
+
+    <div class="feed">
         {% for plan in offer_plans %}
-            <li>{{ plan.label }} — {{ plan.price_da }} DA</li>
+            <article class="offer-card">
+                <div class="offer-card-body">
+                    <h2>{{ plan.label }}</h2>
+                    <p>{{ plan.price_da }} DA</p>
+                    <p>{{ plan.validity_days }} days</p>
+                    {% if plan.features %}
+                        <ul class="offer-card-features">
+                            {% for key, value in plan.features.items %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </article>
         {% empty %}
-            <li>No plans available.</li>
+            <p>No plans available.</p>
         {% endfor %}
-    </ul>
+    </div>
 {% endblock %}
