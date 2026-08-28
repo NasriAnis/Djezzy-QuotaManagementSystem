@@ -1,13 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Client(models.Model):
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
-    email = models.EmailField(blank=False, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='client_profile')
     phone = models.CharField(max_length=20, blank=True)
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
 class Store(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='locations')
