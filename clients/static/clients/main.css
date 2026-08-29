@@ -1,46 +1,104 @@
-/* ============ AUTH BASE LAYOUT ============ */
-.layout-centered {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: calc(100vh - 70px); /* adjust to your topbar height */
-    padding-top: 3rem;
+/* ============ AUTH FORM ============ */
+.auth-form-wrapper {
+    max-width: 380px;
+    margin: 2rem auto;
+    padding: 1.75rem 1.75rem;
+    background: #161616;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-.content-auth {
-    width: 100%;
-    max-width: 420px;
-}
-
-.topbar-back {
-    display: flex;
-    align-items: center;
-}
-
-.btn-back {
-    color: #aaa;
-    background: transparent;
-    border: 1px solid #444;
-}
-.btn-back:hover {
+.auth-form-wrapper h1 {
+    margin: 0 0 1.25rem;
+    font-size: 1.35rem;
+    font-weight: 700;
     color: #fff;
-    border-color: #888;
+    letter-spacing: -0.01em;
 }
 
-/* ============ AUTH SWITCH LINK (signup <-> login) ============ */
+.auth-form-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+/* Inputs (covers raw <input> and Django's form.as_p wrapped fields) */
+.auth-form-wrapper input[type="text"],
+.auth-form-wrapper input[type="email"],
+.auth-form-wrapper input[type="password"],
+.auth-form-wrapper input[type="tel"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.55rem 0.75rem;
+    background: #0f0f0f;
+    border: 1px solid #333;
+    border-radius: 7px;
+    color: #eee;
+    font-size: 0.88rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-form-wrapper input::placeholder {
+    color: #666;
+}
+
+.auth-form-wrapper input:focus {
+    outline: none;
+    border-color: #f5c518;
+    box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.15);
+}
+
+.auth-form-wrapper form p {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.auth-form-wrapper form label {
+    font-size: 0.78rem;
+    color: #999;
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn-signup {
+    margin-top: 0.35rem;
+    width: 100%;
+    padding: 0.65rem;
+    background: #f5c518;
+    color: #111;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn-signup:hover {
+    background: #ffd63d;
+}
+
+.btn-signup:active {
+    transform: translateY(1px);
+}
+
 .auth-switch {
-    margin-top: 1.25rem;
+    margin-top: 1rem;
     text-align: center;
-    font-size: 0.85rem;
-    color: #aaa;
+    font-size: 0.8rem;
 }
-.auth-switch a {
-    color: #f5c518;
-    text-decoration: none;
-    font-weight: 600;
-}
-.auth-switch a:hover {
-    text-decoration: underline;
+
+.auth-error {
+    margin-top: 0.85rem;
+    padding: 0.55rem 0.75rem;
+    background: rgba(255, 82, 82, 0.1);
+    border: 1px solid rgba(255, 82, 82, 0.35);
+    border-radius: 6px;
+    color: #ff8080;
+    font-size: 0.82rem;
 }
 
 /* ============ ACCOUNT INFO ============ */
@@ -52,28 +110,50 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #333;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #262626;
 }
+
 .account-row:last-child {
     border-bottom: none;
 }
 
 .account-label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: #888;
-}
-
-.account-value {
-    font-size: 0.95rem;
-    color: #fff;
     font-weight: 500;
 }
 
-.logout-form-full {
-    margin-top: 0.5rem;
+.account-value {
+    font-size: 0.92rem;
+    color: #fff;
+    font-weight: 500;
+    text-align: right;
 }
-.logout-form-full .btn-logout {
+
+/* ============ LOGOUT BUTTON ============ */
+.logout-form-full {
+    margin-top: 1.25rem;
+}
+
+.btn-logout {
     width: 100%;
     padding: 0.65rem;
+    background: transparent;
+    color: #ff8080;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 82, 82, 0.4);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 82, 82, 0.1);
+    border-color: rgba(255, 82, 82, 0.6);
+}
+
+.btn-logout:active {
+    transform: translateY(1px);
 }
