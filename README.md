@@ -1,1 +1,2 @@
-# Djezzy-B2B-Saas
+## Quotas managment system
+A Django-based platform for telecom operators (e.g. Djezzy) to manage offers sold through outside sellers. Lets operators set purchase thresholds (seuils) per wilaya and per boutique, track consumption against those limits, and control distribution across their reseller network.
