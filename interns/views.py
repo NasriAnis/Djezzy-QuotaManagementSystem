@@ -21,7 +21,8 @@ def commercials_login(request):
         if user is not None:
             login(request, user)
             return redirect('commercials_dashboard_page')
-        return render(request, 'interns/commercials_login_page.html', {'error': 'Invalid credentials'})
+        else:
+            return render(request, 'interns/commercials_login_page.html', {'error': 'Invalid credentials'})
     return render(request, 'interns/commercials_login_page.html')
 
 @login_required(login_url='commercial_login')
