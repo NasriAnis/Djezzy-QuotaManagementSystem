@@ -1,0 +1,50 @@
+from django import forms
+from django.contrib.auth import get_user_model
+
+from .models import Commercial
+
+User = get_user_model()
+
+class CommercialAdminForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput, required=False,
+                                help_text="Leave blank to keep existing password when editing.")
+
+    class Meta:
+        model = Commercial
+        fields = ['phone', 'access_rights']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            # editing an existing commercial — prefill from linked User
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+            self.fields['email'].initial = self.instance.user.email
+            self.fields['password'].required = False
+
+    def save(self, commit=True):
+        commercial = super().save(commit=False)
+
+        if self.instance.pk:
+            user = self.instance.user
+        else:
+            user = User()
+
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
+        user.username = self.cleaned_data['email']
+
+        password = self.cleaned_data.get('password')
+        if password:
+            user.set_password(password)
+
+        user.save()
+        commercial.user = user
+
+        if commit:
+            commercial.save()
+        return commercial
