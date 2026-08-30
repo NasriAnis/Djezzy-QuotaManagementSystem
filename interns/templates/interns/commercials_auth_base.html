@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Djezzy Interns{% endblock %}</title>
+</head>
+<body>
+    <!-- ============ TOP BAR ============ -->
+    <header class="topbar">
+        <!-- LOGO -->
+        <div class="topbar-logo">
+            <h2>Djezzy Interns</h2>
+        </div>
+    </header>
+    <div class="layout-centered">
+        <!-- ============ MAIN CONTENT ============ -->
+        <main class="content-auth">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>
