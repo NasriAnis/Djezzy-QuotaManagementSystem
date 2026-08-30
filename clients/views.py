@@ -43,7 +43,7 @@ def client_logout(request):
     return redirect('client_login')
 
 
-@login_required
+@login_required(login_url='client_login')
 def client_account_page(request, username):
     user = get_object_or_404(User, username=username)
     if request.user != user:
