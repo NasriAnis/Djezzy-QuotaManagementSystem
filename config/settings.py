@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core.apps.CoreConfig',
     'clients.apps.ClientsConfig',
-    'interns.apps.InternsConfig'
+    'interns.apps.InternsConfig',
+    'shared.apps.SharedConfig'
 ]
 
 MIDDLEWARE = [
