@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from core.models import OfferPlan
 
 WILAYA_CHOICES = [
     ('01', 'Adrar'), ('02', 'Chlef'), ('03', 'Laghouat'), ('04', 'Oum El Bouaghi'),
@@ -58,3 +59,23 @@ class Store(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.client})"
+
+class StoreOfferTransaction(models.Model):
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='transactions')
+    plan = models.ForeignKey(OfferPlan, on_delete=models.PROTECT, related_name='store_transactions')
+    quantity_bought = models.PositiveIntegerField(default=0)
+    quantity_sold = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Store Offer Transaction"
+        verbose_name_plural = "Store Offer Transactions"
+
+    @property
+    def current_stock(self):
+        return max(0, self.quantity_bought - self.quantity_sold)
+
+    def __str__(self):
+        return f"{self.store.name} - {self.plan.offer.title} ({self.plan.label}): {self.current_stock} remaining"
