@@ -66,6 +66,10 @@ python manage.py migrate
 ```bash
 python manage.py createsuperuser
 ```
+### 8. Load communes to wilaya data
+```bash
+python manage.py load_communes communes.json
+```
  
 ### 7. Run the development server
 ```bash
