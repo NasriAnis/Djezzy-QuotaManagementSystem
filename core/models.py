@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from clients.models import WILAYA_CHOICES
 
 """
 Models setup:
@@ -39,6 +40,17 @@ class Offer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Quota Helper Methods
+    def get_quota_for_wilaya(self, wilaya_code):
+        padded_code = str(wilaya_code).zfill(2)
+        return self.wilaya_quotas.filter(wilaya_code=padded_code).first()
+
+    def has_available_quota(self, wilaya_code, quantity=1):
+        quota = self.get_quota_for_wilaya(wilaya_code)
+        if not quota:
+            return False  # No quota record created for this Wilaya
+        return quota.is_available(quantity)
+
     # ordering purpose
     class Meta:
         ordering = ['category', 'title']
@@ -73,3 +85,27 @@ class OfferPlan(models.Model):
     # adding labels for admin panel
     def __str__(self):
         return f"{self.offer.title} — {self.label or self.data_amount_gb}Go — {self.price_da} DA"
+
+class OfferQuota(models.Model):
+    offer = models.ForeignKey(Offer,  on_delete=models.CASCADE,  related_name='wilaya_quotas')
+    wilaya_code = models.CharField(max_length=2, choices=WILAYA_CHOICES)
+    total_quota = models.PositiveIntegerField(help_text="Total units available for this Wilaya")
+    allocated_quota = models.PositiveIntegerField(default=0,  help_text="Units currently assigned to stores/clients")
+
+    class Meta:
+        verbose_name = "Offer Wilaya Quota"
+        verbose_name_plural = "Offer Wilaya Quotas"
+        unique_together = ('offer', 'wilaya_code')
+        indexes = [
+            models.Index(fields=['offer', 'wilaya_code']),
+        ]
+
+    @property
+    def remaining_quota(self):
+        return max(0, self.total_quota - self.allocated_quota)
+
+    def is_available(self, quantity=1):
+        return self.remaining_quota >= quantity
+
+    def __str__(self):
+        return f"{self.offer.title} - {self.get_wilaya_code_display()}: {self.remaining_quota}/{self.total_quota} left"
