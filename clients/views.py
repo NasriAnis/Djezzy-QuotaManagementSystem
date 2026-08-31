@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ClientSignupForm, StoreForm
 from .models import Client, Commune
 from django.http import JsonResponse
+from clients.backends import EmailBackend
 
 def client_signup(request):
     if request.method == 'POST':
@@ -20,7 +21,7 @@ def client_signup(request):
                 password=data['password'],
             )
             Client.objects.create(user=user, phone=data.get('phone', ''))
-            login(request, user)
+            login(request, user, backend='clients.backends.EmailBackend')
             return redirect('client_account_page', username=user.username)
     else:
         form = ClientSignupForm()
