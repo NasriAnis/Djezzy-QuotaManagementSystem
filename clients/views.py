@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ClientSignupForm
-from .models import Client
+from .forms import ClientSignupForm, StoreForm
+from .models import Client, Commune
+from django.http import JsonResponse
 
 def client_signup(request):
     if request.method == 'POST':
@@ -42,6 +44,15 @@ def client_logout(request):
     logout(request)
     return redirect('client_login')
 
+def get_communes(request):
+    wilaya_code = request.GET.get('wilaya') or request.GET.get('wilaya_code')
+    if not wilaya_code:
+        return JsonResponse([], safe=False)
+
+    padded_code = str(wilaya_code).zfill(2)
+
+    communes = Commune.objects.filter(wilaya_code=padded_code).order_by('name').values('id', 'name')
+    return JsonResponse(list(communes), safe=False)
 
 @login_required(login_url='client_login')
 def client_account_page(request, username):
@@ -50,3 +61,28 @@ def client_account_page(request, username):
         return redirect('client_account_page', username=request.user.username)
     client = user.client_profile
     return render(request, 'clients/client_account_page.html', {'client': client})
+
+@login_required(login_url='client_login')
+def client_stores_page(request, username):
+    user = get_object_or_404(User, username=username)
+    if request.user != user:
+        return redirect('client_stores_page', username=request.user.username)
+
+    client = user.client_profile
+    stores = client.locations.all().order_by('-created_at')
+
+    if request.method == 'POST':
+        form = StoreForm(request.POST)
+        if form.is_valid():
+            store = form.save(commit=False)
+            store.client = client
+            store.save()
+            return redirect('client_stores_page', username=username)
+    else:
+        form = StoreForm()
+
+    return render(request, 'clients/client_stores_page.html', {
+        'client': client,
+        'stores': stores,
+        'form': form,
+    })

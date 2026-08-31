@@ -27,5 +27,11 @@
         {% csrf_token %}
         <button type="submit" class="btn btn-logout">Log out</button>
     </form>
+
+    <form action="{% url 'client_stores_page' client.user.username %}" method="post" class="stores-form-full">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-stores">Go to Stores</button>
+    </form>
+
 </div>
 {% endblock %}

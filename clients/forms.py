@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Store, Commune
 
 class ClientSignupForm(forms.Form):
     username = forms.CharField(max_length=30)
@@ -27,3 +28,31 @@ class ClientSignupForm(forms.Form):
         if cleaned_data.get('password') != cleaned_data.get('password_confirm'):
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
+
+class StoreForm(forms.ModelForm):
+    class Meta:
+        model = Store
+        fields = ['name', 'address_line1', 'wilaya', 'comune', 'phone']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Store name'}),
+            'address_line1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Address'}),
+            'wilaya': forms.Select(attrs={'class': 'form-control', 'id': 'id_wilaya'}),
+            'comune': forms.Select(attrs={'class': 'form-control', 'id': 'id_comune'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone (optional)'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Check bound data (POST) or model instance (GET/Edit)
+        wilaya_code = None
+        if self.is_bound:
+            wilaya_code = self.data.get('wilaya')
+        elif self.instance and self.instance.pk:
+            wilaya_code = self.instance.wilaya
+
+        if wilaya_code:
+            padded_code = str(wilaya_code).zfill(2)
+            self.fields['comune'].queryset = Commune.objects.filter(wilaya_code=padded_code).order_by('name')
+        else:
+            self.fields['comune'].queryset = Commune.objects.none()
