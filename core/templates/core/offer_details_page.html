@@ -1,8 +1,42 @@
 {% extends 'core/client_page_base.html' %}
 {% block title %}{{ offer.title }}{% endblock %}
+
 {% block content %}
     <h1>{{ offer.title }}</h1>
     <p>{{ offer.description }}</p>
+
+    <!-- Store Selection & Wilaya Quota Display -->
+    <div class="store-quota-section">
+        {% if user.is_authenticated %}
+            {% if user_stores %}
+                <form method="GET" action="" id="store-selector-form">
+                    <label for="store_id"><strong>Select Store:</strong></label>
+                    <select name="store_id" id="store_id" onchange="this.form.submit()">
+                        {% for store in user_stores %}
+                            <option value="{{ store.id }}" {% if selected_store and selected_store.id == store.id %}selected{% endif %}>
+                                {{ store.name }} ({{ store.get_wilaya_display|default:store.wilaya }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+
+                <div class="quota-info-box">
+                    {% if quota_info %}
+                        <p>
+                            <strong>Wilaya {{ quota_info.get_wilaya_code_display }} Allocation:</strong> 
+                            {{ quota_info.remaining_quota }} remaining out of {{ quota_info.total_quota }} total units.
+                        </p>
+                    {% else %}
+                        <p class="warning-text">No offer units currently allocated for {{ selected_store.get_wilaya_display|default:selected_store.wilaya }}.</p>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p>You have no registered stores. <a href="{% url 'client_stores_page' username=user.username %}">Add a store</a> to order plans.</p>
+            {% endif %}
+        {% else %}
+            <p><a href="{% url 'client_login' %}">Log in</a> to select a store and view remaining Wilaya quotas.</p>
+        {% endif %}
+    </div>
 
     <h2>Available Plans</h2>
 
@@ -11,19 +45,48 @@
             <article class="offer-card">
                 <div class="offer-card-body">
                     <h2>{{ plan.label }}</h2>
-                    <p>{{ plan.price_da }} DA</p>
-                    <p>{{ plan.validity_days }} days</p>
+                    <p><strong>Price:</strong> {{ plan.price_da }} DA</p>
+                    <p><strong>Validity:</strong> {{ plan.validity_days }} days</p>
+
                     {% if plan.features %}
                         <ul class="offer-card-features">
                             {% for key, value in plan.features.items %}
-                                <li>{{ key }}: {{ value }}</li>
+                                <li><strong>{{ key }}:</strong> {{ value }}</li>
                             {% endfor %}
                         </ul>
+                    {% endif %}
+
+                    <!-- Custom Quantity Order Form -->
+                    {% if user.is_authenticated and selected_store %}
+                        {% if quota_info and quota_info.remaining_quota > 0 %}
+                            <form method="POST" action="" class="purchase-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="plan_id" value="{{ plan.id }}">
+                                
+                                <div class="quantity-picker" style="margin: 10px 0;">
+                                    <label for="qty_{{ plan.id }}"><strong>Quantity:</strong></label>
+                                    <input 
+                                        type="number" 
+                                        id="qty_{{ plan.id }}" 
+                                        name="quantity" 
+                                        value="1" 
+                                        min="1" 
+                                        max="{{ quota_info.remaining_quota }}" 
+                                        required 
+                                        style="width: 70px;"
+                                    >
+                                </div>
+
+                                <button type="submit" class="btn-primary">Buy Quota for {{ selected_store.name }}</button>
+                            </form>
+                        {% else %}
+                            <button class="btn-disabled" disabled>Quota Exhausted</button>
+                        {% endif %}
                     {% endif %}
                 </div>
             </article>
         {% empty %}
-            <p>No plans available.</p>
+            <p>No plans available for this offer.</p>
         {% endfor %}
     </div>
 {% endblock %}
