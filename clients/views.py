@@ -78,36 +78,3 @@ def client_dashboard_page(request, username):
         'stores': stores,
         'form': form,
     })
-
-# @login_required(login_url='client_login')
-# def client_account_page(request, username):
-#     user = get_object_or_404(User, username=username)
-#     if request.user != user:
-#         return redirect('client_account_page', username=request.user.username)
-#     client = user.client_profile
-#     return render(request, 'clients/client_account_page.html', {'client': client})
-
-# @login_required(login_url='client_login')
-# def client_stores_page(request, username):
-#     user = get_object_or_404(User, username=username)
-#     if request.user != user:
-#         return redirect('client_stores_page', username=request.user.username)
-
-#     client = user.client_profile
-#     stores = client.locations.all().order_by('-created_at')
-
-#     if request.method == 'POST':
-#         form = StoreForm(request.POST)
-#         if form.is_valid():
-#             store = form.save(commit=False)
-#             store.client = client
-#             store.save()
-#             return redirect('client_stores_page', username=username)
-#     else:
-#         form = StoreForm()
-
-#     return render(request, 'clients/client_stores_page.html', {
-#         'client': client,
-#         'stores': stores,
-#         'form': form,
-#     })
