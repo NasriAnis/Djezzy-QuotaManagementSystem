@@ -22,7 +22,7 @@ def client_signup(request):
             )
             Client.objects.create(user=user, phone=data.get('phone', ''))
             login(request, user, backend='clients.backends.EmailBackend')
-            return redirect('client_account_page', username=user.username)
+            return redirect('client_dashboard_page', username=user.username)
     else:
         form = ClientSignupForm()
     return render(request, 'clients/client_signup_page.html', {'form': form})
@@ -35,7 +35,7 @@ def client_login(request):
         user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect('client_account_page', username=user.username)
+            return redirect('client_dashboard_page', username=user.username)
         else:
             return render(request, 'clients/client_login_page.html', {'error': 'Invalid credentials'})
     return render(request, 'clients/client_login_page.html')
