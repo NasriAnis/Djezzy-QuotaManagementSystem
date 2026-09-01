@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from core.models import OfferCategory, Offer, OfferPlan, OfferQuota, WILAYA_CHOICES
 
 from .models import Commercial
 
@@ -48,3 +49,48 @@ class CommercialAdminForm(forms.ModelForm):
         if commit:
             commercial.save()
         return commercial
+
+class OfferCategoryForm(forms.ModelForm):
+    class Meta:
+        model = OfferCategory
+        fields = ['name', 'order']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Offres Internet'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+
+class OfferForm(forms.ModelForm):
+    class Meta:
+        model = Offer
+        fields = ['category', 'title', 'description', 'image', 'is_active', 'is_new']
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_new': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class OfferPlanForm(forms.ModelForm):
+    class Meta:
+        model = OfferPlan
+        fields = ['label', 'data_amount_gb', 'price_da', 'validity_days']
+        widgets = {
+            'label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 60Go'}),
+            'data_amount_gb': forms.NumberInput(attrs={'class': 'form-control'}),
+            'price_da': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'validity_days': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+
+class OfferQuotaForm(forms.ModelForm):
+    class Meta:
+        model = OfferQuota
+        fields = ['wilaya_code', 'total_quota']
+        widgets = {
+            'wilaya_code': forms.Select(choices=WILAYA_CHOICES, attrs={'class': 'form-select'}),
+            'total_quota': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

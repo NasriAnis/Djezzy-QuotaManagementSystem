@@ -6,6 +6,14 @@ from django.contrib import messages
 
 from core.models import Offer, OfferPlan, OfferQuota, WILAYA_CHOICES
 from clients.models import Client, Store, StoreOfferTransaction
+from interns.forms import OfferCategoryForm, OfferForm, OfferPlanForm, OfferQuotaForm
+
+
+def _get_commercial(request):
+    """Helper: returns (commercial, can_edit)."""
+    commercial = getattr(request.user, 'commercial_profile', None)
+    can_edit = bool(commercial) and commercial.access_rights == commercial.AccessRights.READ_WRITE
+    return commercial, can_edit
 
 
 def commercials_index_page(request):
@@ -54,26 +62,87 @@ def commercials_dashboard_page(request):
 
 @login_required(login_url='commercials_login')
 def commercials_offers_page(request):
+    _, can_edit = _get_commercial(request)
+
+    if request.method == 'POST':
+        if not can_edit:
+            messages.error(request, "You have read-only access.")
+            return redirect('commercials_offers_page')
+
+        form_type = request.POST.get('form_type')
+
+        if form_type == 'add_category':
+            cat_form = OfferCategoryForm(request.POST)
+            if cat_form.is_valid():
+                cat_form.save()
+                messages.success(request, "Category created.")
+            else:
+                messages.error(request, "Could not create category — check the form.")
+            return redirect('commercials_offers_page')
+
+        elif form_type == 'add_offer':
+            offer_form = OfferForm(request.POST, request.FILES)
+            if offer_form.is_valid():
+                offer_form.save()
+                messages.success(request, "Offer created.")
+            else:
+                messages.error(request, "Could not create offer — check the form.")
+            return redirect('commercials_offers_page')
+
     offers = Offer.objects.select_related('category').prefetch_related('plans').all()
-    return render(request, 'interns/commercials_offers_page.html', {'offers': offers})
+    return render(request, 'interns/commercials_offers_page.html', {
+        'offers': offers,
+        'can_edit': can_edit,
+        'category_form': OfferCategoryForm(),
+        'offer_form': OfferForm(),
+    })
 
 
 @login_required(login_url='commercials_login')
 def commercials_offer_edit_page(request, slug):
     offer = get_object_or_404(Offer, slug=slug)
-    can_edit = hasattr(request.user, 'commercial_profile') and \
-        request.user.commercial_profile.access_rights == request.user.commercial_profile.AccessRights.READ_WRITE
+    _, can_edit = _get_commercial(request)
 
     if request.method == 'POST':
         if not can_edit:
             messages.error(request, "You have read-only access.")
             return redirect('commercials_offer_edit_page', slug=slug)
-        offer.title = request.POST.get('title')
-        offer.description = request.POST.get('description')
-        offer.is_active = request.POST.get('is_active') == 'on'
-        offer.is_new = request.POST.get('is_new') == 'on'
-        offer.save()
-        messages.success(request, "Offer updated.")
+
+        form_type = request.POST.get('form_type')
+
+        if form_type == 'update_offer':
+            offer.title = request.POST.get('title')
+            offer.description = request.POST.get('description')
+            offer.is_active = request.POST.get('is_active') == 'on'
+            offer.is_new = request.POST.get('is_new') == 'on'
+            if request.FILES.get('image'):
+                offer.image = request.FILES['image']
+            offer.save()
+            messages.success(request, "Offer updated.")
+
+        elif form_type == 'add_plan':
+            plan_form = OfferPlanForm(request.POST)
+            if plan_form.is_valid():
+                plan = plan_form.save(commit=False)
+                plan.offer = offer
+                plan.save()
+                messages.success(request, "Plan added.")
+            else:
+                messages.error(request, "Could not add plan — check the form.")
+
+        elif form_type == 'add_quota':
+            quota_form = OfferQuotaForm(request.POST)
+            if quota_form.is_valid():
+                quota = quota_form.save(commit=False)
+                quota.offer = offer
+                try:
+                    quota.save()
+                    messages.success(request, "Quota added.")
+                except Exception:
+                    messages.error(request, "A quota for this wilaya already exists.")
+            else:
+                messages.error(request, "Could not add quota — check the form.")
+
         return redirect('commercials_offer_edit_page', slug=offer.slug)
 
     return render(request, 'interns/commercials_offer_edit_page.html', {
@@ -81,6 +150,8 @@ def commercials_offer_edit_page(request, slug):
         'plans': offer.plans.all(),
         'quotas': offer.wilaya_quotas.all(),
         'can_edit': can_edit,
+        'plan_form': OfferPlanForm(),
+        'quota_form': OfferQuotaForm(),
     })
 
 
