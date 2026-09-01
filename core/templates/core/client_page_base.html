@@ -1,65 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Djezzy Client{% endblock %}</title>
-
     {% load static %}
-    <link rel="stylesheet" href="{% static 'core/main.css' %}">
-
-    {#  favicon, fonts, extra CSS links #}
+    <link rel="stylesheet" href="{% static 'shared/vendor/bootstrap/css/bootstrap.min.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
-
-<body>
-
+<body class="bg-dark text-light">
     <!-- ============ TOP BAR ============ -->
-    <header class="topbar">
-
-        <!-- LOGO -->
-        <div class="topbar-logo">
-            <h2>Djezzy Client</h2>
+    <header class="navbar navbar-dark bg-black border-bottom border-secondary px-3 py-3">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <h2 class="h5 mb-0">Djezzy Client</h2>
+            <div class="d-flex gap-2">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'client_dashboard_page' username=user.username %}" class="btn btn-outline-light btn-sm">
+                        My Account
+                    </a>
+                    <form action="{% url 'client_logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'client_login' %}" class="btn btn-outline-light btn-sm">Log in</a>
+                    <a href="{% url 'client_signup' %}" class="btn btn-primary btn-sm">Sign up</a>
+                {% endif %}
+            </div>
         </div>
-
-        <!-- ACCOUNT BUTTONS -->
-        <div class="topbar-account">
-            {% if user.is_authenticated %}
-                <a href="{% url 'client_account_page' username=user.username %}" class="btn btn-account">
-                    My Account
-                </a>
-                <form action="{% url 'client_logout' %}" method="post" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-logout">Log out</button>
-                </form>
-            {% else %}
-                <a href="{% url 'client_login' %}" class="btn btn-login">Log in</a>
-                <a href="{% url 'client_signup' %}" class="btn btn-signup">Sign up</a>
-            {% endif %}
-        </div>
-
     </header>
 
-    <div class="layout">
-
-        <!-- ============ LEFT SIDEBAR (FILTERS) ============ -->
-        <!--<aside class="sidebar">
-            <h3>Filters</h3>
-
-            <div class="filter-group">
-            </div>
-
-        </aside>-->
-
-        <!-- ============ MAIN CONTENT ============ -->
-        <main class="content">
+    <div class="container-fluid">
+        <main class="content py-4">
             {% block content %}
-            {# child templates (like index.html) inject their content here #}
+            {# child templates inject their content here #}
             {% endblock %}
         </main>
-
     </div>
 
+    <script src="{% static 'shared/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
-
 </html>

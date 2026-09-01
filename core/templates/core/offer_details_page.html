@@ -2,91 +2,181 @@
 {% block title %}{{ offer.title }}{% endblock %}
 
 {% block content %}
-    <h1>{{ offer.title }}</h1>
-    <p>{{ offer.description }}</p>
+<div class="container" style="max-width: 900px;">
+    <h1 class="mb-2">{{ offer.title }}</h1>
+    <p class="text-secondary mb-4">{{ offer.description }}</p>
 
-    <!-- Store Selection & Wilaya Quota Display -->
-    <div class="store-quota-section">
-        {% if user.is_authenticated %}
-            {% if user_stores %}
-                <form method="GET" action="" id="store-selector-form">
-                    <label for="store_id"><strong>Select Store:</strong></label>
-                    <select name="store_id" id="store_id" onchange="this.form.submit()">
-                        {% for store in user_stores %}
-                            <option value="{{ store.id }}" {% if selected_store and selected_store.id == store.id %}selected{% endif %}>
-                                {{ store.name }} ({{ store.get_wilaya_display|default:store.wilaya }})
-                            </option>
-                        {% endfor %}
-                    </select>
-                </form>
+    <!-- ============ STORE SELECTION & QUOTA (sticky) ============ -->
+    <div class="card bg-body-tertiary border-secondary mb-4 sticky-top" style="top: 12px; z-index: 10;">
+        <div class="card-body">
+            {% if user.is_authenticated %}
+                {% if user_stores %}
+                    <form method="GET" action="" id="store-selector-form" class="row g-2 align-items-center">
+                        <div class="col-auto">
+                            <label for="store_id" class="form-label mb-0">Store</label>
+                        </div>
+                        <div class="col-auto">
+                            <select name="store_id" id="store_id" class="form-select" onchange="this.form.submit()">
+                                {% for store in user_stores %}
+                                <option value="{{ store.id }}" {% if selected_store and selected_store.id == store.id %}selected{% endif %}>
+                                    {{ store.name }} ({{ store.get_wilaya_display|default:store.wilaya }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                <div class="quota-info-box">
-                    {% if quota_info %}
-                        <p>
-                            <strong>Wilaya {{ quota_info.get_wilaya_code_display }} Allocation:</strong> 
-                            {{ quota_info.remaining_quota }} remaining out of {{ quota_info.total_quota }} total units.
-                        </p>
-                    {% else %}
-                        <p class="warning-text">No offer units currently allocated for {{ selected_store.get_wilaya_display|default:selected_store.wilaya }}.</p>
+                        {% if quota_info %}
+                        <div class="col-auto text-secondary">
+                            <strong>Wilaya {{ quota_info.get_wilaya_code_display }}:</strong>
+                            {{ quota_info.remaining_quota }} / {{ quota_info.total_quota }} remaining
+                        </div>
+                        {% endif %}
+                    </form>
+
+                    {% if not quota_info %}
+                    <div class="alert alert-warning mb-0 py-2 mt-3">
+                        No offer units currently allocated for {{ selected_store.get_wilaya_display|default:selected_store.wilaya }}.
+                    </div>
                     {% endif %}
-                </div>
+                {% else %}
+                    <p class="mb-0">You have no registered stores. <a href="{% url 'client_dashboard_page' username=user.username %}">Add a store</a> to order plans.</p>
+                {% endif %}
             {% else %}
-                <p>You have no registered stores. <a href="{% url 'client_stores_page' username=user.username %}">Add a store</a> to order plans.</p>
+                <p class="mb-0"><a href="{% url 'client_login' %}">Log in</a> to select a store and view remaining Wilaya quotas.</p>
             {% endif %}
-        {% else %}
-            <p><a href="{% url 'client_login' %}">Log in</a> to select a store and view remaining Wilaya quotas.</p>
-        {% endif %}
+        </div>
     </div>
 
-    <h2>Available Plans</h2>
+    <h2 class="mb-3">Available Plans</h2>
 
-    <div class="feed">
+    <div class="row g-4">
         {% for plan in offer_plans %}
-            <article class="offer-card">
-                <div class="offer-card-body">
-                    <h2>{{ plan.label }}</h2>
-                    <p><strong>Price:</strong> {{ plan.price_da }} DA</p>
-                    <p><strong>Validity:</strong> {{ plan.validity_days }} days</p>
+        <div class="col-12 col-md-6">
+            <div class="card bg-body-tertiary border-secondary h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-2">{{ plan.label }}</h5>
+                    <p class="text-secondary small mb-3">Valid for {{ plan.validity_days }} days</p>
 
                     {% if plan.features %}
-                        <ul class="offer-card-features">
-                            {% for key, value in plan.features.items %}
-                                <li><strong>{{ key }}:</strong> {{ value }}</li>
-                            {% endfor %}
-                        </ul>
+                    <ul class="list-unstyled small mb-3">
+                        {% for key, value in plan.features.items %}
+                        <li class="mb-1">
+                            <span class="text-success">✓</span>
+                            <strong>{{ key }}:</strong> {{ value }}
+                        </li>
+                        {% endfor %}
+                    </ul>
                     {% endif %}
 
-                    <!-- Custom Quantity Order Form -->
-                    {% if user.is_authenticated and selected_store %}
-                        {% if quota_info and quota_info.remaining_quota > 0 %}
-                            <form method="POST" action="" class="purchase-form">
-                                {% csrf_token %}
-                                <input type="hidden" name="plan_id" value="{{ plan.id }}">
-                                
-                                <div class="quantity-picker" style="margin: 10px 0;">
-                                    <label for="qty_{{ plan.id }}"><strong>Quantity:</strong></label>
-                                    <input 
-                                        type="number" 
-                                        id="qty_{{ plan.id }}" 
-                                        name="quantity" 
-                                        value="1" 
-                                        min="1" 
-                                        max="{{ quota_info.remaining_quota }}" 
-                                        required 
-                                        style="width: 70px;"
-                                    >
-                                </div>
-
-                                <button type="submit" class="btn-primary">Buy Quota for {{ selected_store.name }}</button>
-                            </form>
-                        {% else %}
-                            <button class="btn-disabled" disabled>Quota Exhausted</button>
+                    <div class="mt-auto pt-2">
+                        {% if user.is_authenticated and selected_store %}
+                            {% if quota_info and quota_info.remaining_quota > 0 %}
+                            <button type="button" class="btn btn-primary w-100"
+                                    data-bs-toggle="modal" data-bs-target="#buyModal"
+                                    data-plan-id="{{ plan.id }}"
+                                    data-plan-label="{{ plan.label }}"
+                                    data-plan-price="{{ plan.price_da }}"
+                                    data-max-qty="{{ quota_info.remaining_quota }}">
+                                Buy this plan
+                            </button>
+                            {% else %}
+                            <button class="btn btn-secondary w-100" disabled>Quota Exhausted</button>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
+                    </div>
                 </div>
-            </article>
+            </div>
+        </div>
         {% empty %}
-            <p>No plans available for this offer.</p>
+        <div class="col-12">
+            <p class="text-secondary">No plans available for this offer.</p>
+        </div>
         {% endfor %}
     </div>
+</div>
+
+<!-- ============ SHARED BUY MODAL ============ -->
+{% if user.is_authenticated and selected_store %}
+<div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-body-tertiary text-light">
+            <form method="POST" action="" id="buyForm">
+                {% csrf_token %}
+                <input type="hidden" name="plan_id" id="buyPlanId" value="">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="buyModalLabel">Buy plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-1"><strong>Store:</strong> {{ selected_store.name }}</p>
+                    <p class="mb-3"><strong>Wilaya:</strong> {{ selected_store.get_wilaya_display|default:selected_store.wilaya }}</p>
+
+                    <label for="buyQty" class="form-label">Quantity</label>
+                    <div class="input-group mb-1" style="max-width: 160px;">
+                        <button type="button" class="btn btn-outline-light" id="qtyMinus">−</button>
+                        <input type="number" id="buyQty" name="quantity" value="1" min="1" class="form-control text-center" required>
+                        <button type="button" class="btn btn-outline-light" id="qtyPlus">+</button>
+                    </div>
+                    <div class="form-text" id="qtyHint"></div>
+
+                    <div class="mt-3 p-2 rounded bg-dark d-flex justify-content-between">
+                        <span>Total</span>
+                        <strong id="buyTotal">0 DA</strong>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buyModal = document.getElementById('buyModal');
+    if (!buyModal) return;
+
+    const planIdInput = document.getElementById('buyPlanId');
+    const qtyInput = document.getElementById('buyQty');
+    const qtyHint = document.getElementById('qtyHint');
+    const totalEl = document.getElementById('buyTotal');
+    const modalLabel = document.getElementById('buyModalLabel');
+    let price = 0;
+
+    function updateTotal() {
+        const qty = parseInt(qtyInput.value) || 0;
+        totalEl.textContent = (qty * price).toLocaleString() + ' DA';
+    }
+
+    buyModal.addEventListener('show.bs.modal', function (event) {
+        const btn = event.relatedTarget;
+        const planId = btn.getAttribute('data-plan-id');
+        const label = btn.getAttribute('data-plan-label');
+        price = parseFloat(btn.getAttribute('data-plan-price'));
+        const maxQty = parseInt(btn.getAttribute('data-max-qty'));
+
+        planIdInput.value = planId;
+        modalLabel.textContent = 'Buy ' + label;
+        qtyInput.max = maxQty;
+        qtyInput.value = 1;
+        qtyHint.textContent = 'Max ' + maxQty + ' units available for this wilaya.';
+        updateTotal();
+    });
+
+    qtyInput.addEventListener('input', updateTotal);
+
+    document.getElementById('qtyMinus').addEventListener('click', function () {
+        qtyInput.value = Math.max(1, (parseInt(qtyInput.value) || 1) - 1);
+        updateTotal();
+    });
+    document.getElementById('qtyPlus').addEventListener('click', function () {
+        const max = parseInt(qtyInput.max) || Infinity;
+        qtyInput.value = Math.min(max, (parseInt(qtyInput.value) || 1) + 1);
+        updateTotal();
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

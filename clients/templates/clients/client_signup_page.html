@@ -1,14 +1,14 @@
 {% extends 'clients/client_auth_base.html' %}
 {% block title %}Sign up{% endblock %}
 {% block content %}
-<div class="auth-form-wrapper">
-    <h1>Create your account</h1>
+<div class="container" style="max-width: 400px;">
+    <h1 class="mb-4">Create your account</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-signup">Sign up</button>
+        <button type="submit" class="btn btn-primary w-100">Sign up</button>
     </form>
-    <p class="auth-switch">
+    <p class="mt-3 text-secondary">
         Already have an account?
         <a href="{% url 'client_login' %}">Log in</a>
     </p>

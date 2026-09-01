@@ -1,23 +1,29 @@
 {% extends 'core/client_page_base.html' %}
 {% block title %}Offers{% endblock %}
 {% block content %}
-<h1>Offers</h1>
-<div class="feed">
-    {% for offer in offers %}
-        <article class="offer-card">
-            <a href="{% url 'offer_detail_page' offer.slug %}" class="offer-card-link">
-                {% if offer.image %}
-                    <img src="{{ offer.image.url }}" alt="{{ offer.title }}">
-                {% endif %}
-                <div class="offer-card-body">
-                    <h2>{{ offer.title }}</h2>
-                    <p>{{ offer.description }}</p>
-                    {# Others #}
+<div class="container">
+    <h1 class="mb-4">Offers</h1>
+
+    <div class="row g-4">
+        {% for offer in offers %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="{% url 'offer_detail_page' offer.slug %}" class="text-decoration-none">
+                <div class="card bg-body-tertiary text-light h-100 border-secondary">
+                    {% if offer.image %}
+                    <img src="{{ offer.image.url }}" class="card-img-top" alt="{{ offer.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ offer.title }}</h5>
+                        <p class="card-text text-secondary">{{ offer.description|truncatewords:20 }}</p>
+                    </div>
                 </div>
             </a>
-        </article>
-    {% empty %}
-        <p>No offers found.</p>
-    {% endfor %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-secondary">No offers found.</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

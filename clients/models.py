@@ -40,7 +40,7 @@ class Commune(models.Model):
         indexes = [models.Index(fields=['wilaya_code', 'name'])]
 
     def __str__(self):
-        return f"{self.name} ({self.get_wilaya_code_display()})"
+        return f"{self.name} ({self.wilaya_code()})"
 
 
 class Store(models.Model):
