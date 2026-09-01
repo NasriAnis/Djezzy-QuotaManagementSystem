@@ -130,6 +130,20 @@ def commercials_offer_edit_page(request, slug):
             else:
                 messages.error(request, "Could not add plan — check the form.")
 
+        elif form_type == 'edit_plan':
+            plan = get_object_or_404(OfferPlan, id=request.POST.get('plan_id'), offer=offer)
+            plan_form = OfferPlanForm(request.POST, instance=plan)
+            if plan_form.is_valid():
+                plan_form.save()
+                messages.success(request, "Plan updated.")
+            else:
+                messages.error(request, "Could not update plan — check the form.")
+
+        elif form_type == 'delete_plan':
+            plan = get_object_or_404(OfferPlan, id=request.POST.get('plan_id'), offer=offer)
+            plan.delete()
+            messages.success(request, "Plan deleted.")
+
         elif form_type == 'add_quota':
             quota_form = OfferQuotaForm(request.POST)
             if quota_form.is_valid():
