@@ -20,7 +20,6 @@ class CommercialAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
-            # editing an existing commercial — prefill from linked User
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
             self.fields['email'].initial = self.instance.user.email
@@ -55,7 +54,7 @@ class OfferCategoryForm(forms.ModelForm):
         model = OfferCategory
         fields = ['name', 'order']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Offres Internet'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Offres PostPayee'}),
             'order': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
