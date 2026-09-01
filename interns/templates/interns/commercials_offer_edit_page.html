@@ -1,0 +1,99 @@
+{% extends 'interns/interns_base.html' %}
+{% block title %}Edit {{ offer.title }}{% endblock %}
+{% block content %}
+<a href="{% url 'commercials_offers_page' %}" class="btn btn-outline-light btn-sm mb-3">&larr; Back to Offers</a>
+<h1 class="mb-4">Edit Offer</h1>
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} py-2">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+{% if not can_edit %}
+<div class="alert alert-warning py-2">You have read-only access. Changes are disabled.</div>
+{% endif %}
+
+<div class="card bg-body-tertiary border-secondary mb-4" style="max-width: 600px;">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <fieldset {% if not can_edit %}disabled{% endif %}>
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" value="{{ offer.title }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="4">{{ offer.description }}</textarea>
+                </div>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="is_active" id="isActive" {% if offer.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="isActive">Active</label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" name="is_new" id="isNew" {% if offer.is_new %}checked{% endif %}>
+                    <label class="form-check-label" for="isNew">Mark as New</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<h5 class="mb-3">Plans</h5>
+<div class="card bg-body-tertiary border-secondary mb-4">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Data</th>
+                    <th>Price</th>
+                    <th>Validity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                <tr>
+                    <td>{{ plan.label }}</td>
+                    <td>{{ plan.data_amount_gb|default:"—" }} Go</td>
+                    <td>{{ plan.price_da }} DA</td>
+                    <td>{{ plan.validity_days }} days</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-secondary">No plans yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h5 class="mb-3">Wilaya Quotas</h5>
+<div class="card bg-body-tertiary border-secondary">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Wilaya</th>
+                    <th>Total Quota</th>
+                    <th>Allocated</th>
+                    <th>Remaining</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quota in quotas %}
+                <tr>
+                    <td>{{ quota.get_wilaya_code_display }}</td>
+                    <td>{{ quota.total_quota }}</td>
+                    <td>{{ quota.allocated_quota }}</td>
+                    <td class="{% if quota.remaining_quota == 0 %}text-danger{% endif %}">{{ quota.remaining_quota }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-secondary">No quotas set for any wilaya yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
