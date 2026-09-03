@@ -1,6 +1,8 @@
-# from django.shortcuts import render, get_object_or_404
-# from django.http import HttpResponse
-# from .models import Offer, OfferCategory, OfferPlan
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.db import transaction
+from .models import Offer, OfferPlan, OfferQuota, OfferCategory
+from clients.models import Store, StoreOfferTransaction
 
 # def client_index_page(request):
 #     offers = Offer.objects.filter(is_active=True)
