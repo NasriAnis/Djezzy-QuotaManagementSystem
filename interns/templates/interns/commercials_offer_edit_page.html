@@ -202,6 +202,14 @@
                         <label class="form-label">{{ plan_form.validity_days.label }}</label>
                         {{ plan_form.validity_days }}
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Features (JSON)</label>
+                        {{ plan_form.features }}
+                        <div class="form-text">Optional. Must be valid JSON, e.g. <code>{"5g": true, "roaming": false}</code></div>
+                        {% if plan_form.features.errors %}
+                        <div class="text-danger small">{{ plan_form.features.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
@@ -241,6 +249,11 @@
                     <div class="mb-3">
                         <label class="form-label">Validity (days)</label>
                         <input type="number" name="validity_days" class="form-control" value="{{ plan.validity_days }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Features (JSON)</label>
+                        <textarea name="features" class="form-control font-monospace" rows="4">{{ plan.features_pretty }}</textarea>
+                        <div class="form-text">Must be valid JSON, e.g. <code>{"5g": true, "roaming": false}</code></div>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">

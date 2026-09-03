@@ -100,6 +100,15 @@ class OfferPlan(models.Model):
     class Meta:
         ordering = ['price_da']
 
+    @property
+    def features_pretty(self):
+        """Pretty-printed JSON string of `features`, for editable textareas."""
+        import json
+        try:
+            return json.dumps(self.features or {}, indent=2, ensure_ascii=False)
+        except (TypeError, ValueError):
+            return '{}'
+
     # adding labels for admin panel
     def __str__(self):
         return f"{self.offer.title} — {self.label or self.data_amount_gb}Go — {self.price_da} DA"

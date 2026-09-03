@@ -76,12 +76,14 @@ class OfferForm(forms.ModelForm):
 class OfferPlanForm(forms.ModelForm):
     class Meta:
         model = OfferPlan
-        fields = ['label', 'data_amount_gb', 'price_da', 'validity_days']
+        fields = ['label', 'data_amount_gb', 'price_da', 'validity_days', 'features']
         widgets = {
             'label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 60Go'}),
             'data_amount_gb': forms.NumberInput(attrs={'class': 'form-control'}),
             'price_da': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'validity_days': forms.NumberInput(attrs={'class': 'form-control'}),
+            'features': forms.Textarea(attrs={'class': 'form-control font-monospace', 'rows': 4}),
+
         }
 
 
