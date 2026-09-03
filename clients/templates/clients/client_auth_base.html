@@ -6,24 +6,25 @@
     <title>{% block title %}Djezzy Client{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'shared/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'shared/css/djezzy-theme.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-dark text-light">
     <!-- ============ TOP BAR ============ -->
-    <header class="navbar navbar-dark bg-black border-bottom border-secondary px-3 py-3">
+    <header class="navbar navbar-dark bg-black border-bottom border-3 px-3 py-3" style="border-color: var(--bs-primary) !important;">
         <div class="d-flex justify-content-between align-items-center w-100">
-            <h2 class="h5 mb-0">Djezzy Client</h2>
+            <h2 class="h5 mb-0 text-uppercase">
+                <span style="color: var(--bs-primary);">Djezzy</span> Client
+            </h2>
             <a href="{% url 'client_index_page' %}" class="btn btn-outline-light btn-sm">&larr; Back to Offers</a>
         </div>
     </header>
-
     <div class="container-fluid">
         <main class="content-auth py-4">
             {% block content %}
             {% endblock %}
         </main>
     </div>
-
     <script src="{% static 'shared/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
