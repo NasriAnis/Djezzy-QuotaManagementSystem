@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from core.models import Offer, OfferPlan, OfferQuota, WILAYA_CHOICES
 from clients.models import Client, Store, StoreOfferTransaction
-from interns.forms import OfferCategoryForm, OfferForm, OfferPlanForm, OfferQuotaForm
+from interns.forms import OfferCategoryForm, OfferForm, OfferPlanForm, OfferQuotaForm, OfferCategory
 
 
 def _get_commercial(request):
@@ -59,7 +59,6 @@ def commercials_dashboard_page(request):
     }
     return render(request, 'interns/commercials_dashboard_page.html', context)
 
-
 @login_required(login_url='commercials_login')
 def commercials_offers_page(request):
     _, can_edit = _get_commercial(request)
@@ -80,6 +79,26 @@ def commercials_offers_page(request):
                 messages.error(request, "Could not create category — check the form.")
             return redirect('commercials_offers_page')
 
+        elif form_type == 'edit_category':
+            category = get_object_or_404(OfferCategory, id=request.POST.get('category_id'))
+            cat_form = OfferCategoryForm(request.POST, instance=category)
+            if cat_form.is_valid():
+                cat_form.save()
+                messages.success(request, "Category updated.")
+            else:
+                messages.error(request, "Could not update category — check the form.")
+            return redirect('commercials_offers_page')
+
+        elif form_type == 'delete_category':
+            category = get_object_or_404(OfferCategory, id=request.POST.get('category_id'))
+            if category.offers.exists():
+                messages.error(request, f"Can't delete '{category.name}' — it still has offers assigned to it.")
+            else:
+                category_name = category.name
+                category.delete()
+                messages.success(request, f"Category '{category_name}' deleted.")
+            return redirect('commercials_offers_page')
+
         elif form_type == 'add_offer':
             offer_form = OfferForm(request.POST, request.FILES)
             if offer_form.is_valid():
@@ -90,13 +109,14 @@ def commercials_offers_page(request):
             return redirect('commercials_offers_page')
 
     offers = Offer.objects.select_related('category').prefetch_related('plans').all()
+    categories = OfferCategory.objects.all().order_by('order')
     return render(request, 'interns/commercials_offers_page.html', {
         'offers': offers,
+        'categories': categories,
         'can_edit': can_edit,
         'category_form': OfferCategoryForm(),
         'offer_form': OfferForm(),
     })
-
 
 @login_required(login_url='commercials_login')
 def commercials_offer_edit_page(request, slug):
