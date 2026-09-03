@@ -13,7 +13,11 @@
     <div class="d-flex" style="min-height: 100vh;">
         <!-- ============ SIDEBAR ============ -->
         <nav class="bg-black border-end border-secondary p-3" style="width: 220px; flex-shrink: 0;">
-            <h5 class="mb-4 text-uppercase"><span style="color: var(--bs-primary);">Djezzy</span> Commercial</h5>
+            <h5 class="mb-4 text-uppercase">
+                <a href="{% url 'commercials_dashboard_page' %}" class="text-decoration-none text-light">
+                    <span style="color: var(--bs-primary);">Djezzy</span> Commercial
+                </a>
+            </h5>
             <ul class="nav nav-pills flex-column gap-1">
                 <li class="nav-item">
                     <a class="nav-link {% if request.resolver_match.url_name == 'commercials_dashboard_page' %}active{% else %}text-light{% endif %}"
