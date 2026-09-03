@@ -4,43 +4,20 @@ from django.db import transaction
 from .models import Offer, OfferPlan, OfferQuota, OfferCategory
 from clients.models import Store, StoreOfferTransaction
 
-# def client_index_page(request):
-#     offers = Offer.objects.filter(is_active=True)
-#     categories = OfferCategory.objects.all()
-
-#     # search / filter query logic here
-
-#     context = {
-#         'offers': offers,
-#         'categories': categories,
-#     }
-#     return render(request, 'core/client_index.html', context)
-
-# def offer_detail_page(request, offer_slug):
-#     offer = get_object_or_404(Offer, slug=offer_slug, is_active=True)
-#     offer_plans = offer.plans.all()
-
-#     context = {
-#         'offer': offer,
-#         'offer_plans': offer_plans,
-#     }
-#     return render(request,"core/offer_details_page.html", context)
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from django.db import transaction
-from .models import Offer, OfferPlan, OfferQuota, OfferCategory
-from clients.models import Store, StoreOfferTransaction
-
 def client_index_page(request):
     offers = Offer.objects.filter(is_active=True)
     categories = OfferCategory.objects.all()
 
-    # search / filter query logic here
+    selected_category = None
+    category_id = request.GET.get('category')
+    if category_id:
+        offers = offers.filter(category_id=category_id)
+        selected_category = categories.filter(id=category_id).first()
 
     context = {
         'offers': offers,
         'categories': categories,
+        'selected_category': selected_category,
     }
     return render(request, 'core/client_index.html', context)
 
