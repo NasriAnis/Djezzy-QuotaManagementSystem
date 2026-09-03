@@ -1,0 +1,86 @@
+/* Djezzy brand theme — overrides Bootstrap CSS variables only to match djezzy.dz */
+
+[data-bs-theme="dark"] {
+  /* Brand colors */
+  --bs-primary: #E30613;
+  --bs-primary-rgb: 227, 6, 19;
+  --bs-primary-text-emphasis: #ff4d57;
+  --bs-primary-bg-subtle: #2a0507;
+  --bs-primary-border-subtle: #6e0912;
+
+  --bs-danger: #ff3b3b;
+  --bs-danger-rgb: 255, 59, 59;
+
+  --bs-link-color: #ff4d57;
+  --bs-link-hover-color: #ff7f86;
+  --bs-link-color-rgb: 255, 77, 87;
+  --bs-link-hover-color-rgb: 255, 127, 134;
+
+  /* Base surfaces */
+  --bs-body-bg: #0d0d0d;
+  --bs-body-color: #f1f1f1;
+  --bs-tertiary-bg: #1a1a1a;
+  --bs-secondary-color: #a3a3a3;
+  --bs-border-color: #333333;
+
+  --bs-body-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* image client index styling */
+.card-img-top {
+  height: 320px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Buttons: force text/icon contrast on the red primary */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #E30613;
+  --bs-btn-border-color: #E30613;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #b8050f;
+  --bs-btn-hover-border-color: #b8050f;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #a1040d;
+  --bs-btn-active-border-color: #a1040d;
+  --bs-btn-disabled-bg: #E30613;
+  --bs-btn-disabled-border-color: #E30613;
+  font-weight: 600;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #ff3b3b;
+  --bs-btn-border-color: #ff3b3b;
+  --bs-btn-hover-bg: #ff3b3b;
+  --bs-btn-hover-border-color: #ff3b3b;
+}
+
+.btn-outline-light {
+  --bs-btn-hover-bg: #E30613;
+  --bs-btn-hover-border-color: #E30613;
+}
+
+/* Headings pick up brand weight, Djezzy uses bold condensed-ish headers */
+h1, h2, h3, .card-title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Nav pills (used on My Account quick-nav) */
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  background-color: var(--bs-primary);
+}
+.nav-pills .nav-link {
+  color: var(--bs-secondary-color);
+}
+.nav-pills .nav-link:hover {
+  color: #fff;
+}
+
+/* Table hover uses brand tint instead of default bootstrap gray */
+.table-hover > tbody > tr:hover > * {
+  --bs-table-hover-bg: rgba(227, 6, 19, 0.08);
+  --bs-table-hover-color: #fff;
+}
