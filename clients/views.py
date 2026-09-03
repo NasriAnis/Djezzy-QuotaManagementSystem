@@ -62,16 +62,35 @@ def client_dashboard_page(request, username):
         return redirect('client_dashboard_page', username=request.user.username)
     client = user.client_profile
     stores = client.locations.all().order_by('-created_at')
+    form = StoreForm()
 
     if request.method == 'POST':
-        form = StoreForm(request.POST)
-        if form.is_valid():
-            store = form.save(commit=False)
-            store.client = client
+        form_type = request.POST.get('form_type')
+
+        if form_type == 'edit_client':
+            user.first_name = request.POST.get('first_name', '').strip()
+            user.last_name = request.POST.get('last_name', '').strip()
+            user.email = request.POST.get('email', '').strip()
+            user.save()
+            client.phone = request.POST.get('phone', '').strip()
+            client.save()
+            return redirect('client_dashboard_page', username=username)
+
+        elif form_type == 'add_store':
+            form = StoreForm(request.POST)
+            if form.is_valid():
+                store = form.save(commit=False)
+                store.client = client
+                store.save()
+                return redirect('client_dashboard_page', username=username)
+
+        elif form_type == 'edit_store':
+            store = get_object_or_404(Store, id=request.POST.get('store_id'), client=client)
+            store.name = request.POST.get('name', '').strip()
+            store.address_line1 = request.POST.get('address_line1', '').strip()
+            store.phone = request.POST.get('phone', '').strip()
             store.save()
             return redirect('client_dashboard_page', username=username)
-    else:
-        form = StoreForm()
 
     return render(request, 'clients/client_dashboard_page.html', {
         'client': client,
