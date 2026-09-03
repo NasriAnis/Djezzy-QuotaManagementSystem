@@ -120,6 +120,12 @@ def commercials_offer_edit_page(request, slug):
             offer.save()
             messages.success(request, "Offer updated.")
 
+        elif form_type == 'delete_offer':
+            offer_title = offer.title
+            offer.delete()
+            messages.success(request, f"Offer '{offer_title}' deleted.")
+            return redirect('commercials_offers_page')
+
         elif form_type == 'add_plan':
             plan_form = OfferPlanForm(request.POST)
             if plan_form.is_valid():
@@ -156,6 +162,20 @@ def commercials_offer_edit_page(request, slug):
                     messages.error(request, "A quota for this wilaya already exists.")
             else:
                 messages.error(request, "Could not add quota — check the form.")
+
+        elif form_type == 'edit_quota':
+            quota = get_object_or_404(OfferQuota, id=request.POST.get('quota_id'), offer=offer)
+            quota_form = OfferQuotaForm(request.POST, instance=quota)
+            if quota_form.is_valid():
+                quota_form.save()
+                messages.success(request, "Quota updated.")
+            else:
+                messages.error(request, "Could not update quota — check the form.")
+
+        elif form_type == 'delete_quota':
+            quota = get_object_or_404(OfferQuota, id=request.POST.get('quota_id'), offer=offer)
+            quota.delete()
+            messages.success(request, "Quota deleted.")
 
         return redirect('commercials_offer_edit_page', slug=offer.slug)
 

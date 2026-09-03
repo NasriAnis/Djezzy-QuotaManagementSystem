@@ -43,7 +43,14 @@
                     <input class="form-check-input" type="checkbox" name="is_new" id="isNew" {% if offer.is_new %}checked{% endif %}>
                     <label class="form-check-label" for="isNew">Mark as New</label>
                 </div>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    {% if can_edit %}
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteOfferModal">
+                        Delete Offer
+                    </button>
+                    {% endif %}
+                </div>
             </fieldset>
         </form>
     </div>
@@ -114,6 +121,7 @@
                     <th>Total Quota</th>
                     <th>Allocated</th>
                     <th>Remaining</th>
+                    {% if can_edit %}<th class="text-end">Actions</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -123,9 +131,19 @@
                     <td>{{ quota.total_quota }}</td>
                     <td>{{ quota.allocated_quota }}</td>
                     <td class="{% if quota.remaining_quota == 0 %}text-danger{% endif %}">{{ quota.remaining_quota }}</td>
+                    {% if can_edit %}
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#editQuotaModal{{ quota.id }}">
+                            Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteQuotaModal{{ quota.id }}">
+                            Delete
+                        </button>
+                    </td>
+                    {% endif %}
                 </tr>
                 {% empty %}
-                <tr><td colspan="4" class="text-secondary">No quotas set for any wilaya yet.</td></tr>
+                <tr><td colspan="{% if can_edit %}5{% else %}4{% endif %}" class="text-secondary">No quotas set for any wilaya yet.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -133,6 +151,29 @@
 </div>
 
 {% if can_edit %}
+<!-- ============ DELETE OFFER MODAL ============ -->
+<div class="modal fade" id="deleteOfferModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-body-tertiary text-light">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="delete_offer">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Delete Offer</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Delete <strong>{{ offer.title }}</strong> and all its plans and quotas? This can't be undone.</p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Offer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- ============ ADD PLAN MODAL ============ -->
 <div class="modal fade" id="planModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -264,5 +305,61 @@
         </div>
     </div>
 </div>
+
+<!-- ============ EDIT / DELETE QUOTA MODALS (one pair per quota) ============ -->
+{% for quota in quotas %}
+<div class="modal fade" id="editQuotaModal{{ quota.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-body-tertiary text-light">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="edit_quota">
+                <input type="hidden" name="quota_id" value="{{ quota.id }}">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Edit Quota — {{ quota.get_wilaya_code_display }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Wilaya</label>
+                        <input type="text" class="form-control" value="{{ quota.get_wilaya_code_display }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Total Quota</label>
+                        <input type="number" name="total_quota" class="form-control" value="{{ quota.total_quota }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteQuotaModal{{ quota.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-body-tertiary text-light">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="delete_quota">
+                <input type="hidden" name="quota_id" value="{{ quota.id }}">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Delete Quota</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Delete the quota for <strong>{{ quota.get_wilaya_code_display }}</strong>? This can't be undone.</p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endif %}
 {% endblock %}
